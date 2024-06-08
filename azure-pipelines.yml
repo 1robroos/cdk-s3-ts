@@ -65,13 +65,16 @@ stages:
   displayName: Deploy to shadow environment
   dependsOn: Build
   jobs:
-  - task: AWSCLI@1
-    inputs:
-      awsCredentials: my-aws-account-cdk-2-accounts-cdk-s3-ts   # iam user azure devops will assume role arn:aws:iam::999592371459:role/allow_ADO_via_master_account ( is RobRoosDEV account )
-      regionName: 'us-east-1'
-      awsCommand: 'sts'
-      awsSubCommand: 'get-caller-identity'
-  #   displayName: 'aws sts'
+  - job: sts
+    displayName: sts
+    steps:
+    - task: AWSCLI@1
+      inputs:
+        awsCredentials: my-aws-account-cdk-2-accounts-cdk-s3-ts   # iam user azure devops will assume role arn:aws:iam::999592371459:role/allow_ADO_via_master_account ( is RobRoosDEV account )
+        regionName: 'us-east-1'
+        awsCommand: 'sts'
+        awsSubCommand: 'get-caller-identity'
+      displayName: 'aws sts'
   
   # - deployment: Deploy
   #   environment: RobRoosCdkLandingZoneStaging
@@ -107,29 +110,29 @@ stages:
   #                 npx cdk deploy --app 'cdk.out-shadow/' --require-approval never --all
 
   
-- deployment: DeleteStack
-  environment: RobRoosCdkLandingZoneStaging
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              artifact: cdk.out-shadow
-              path: '$(System.DefaultWorkingDirectory)/cdk.out-shadow'
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              artifact: bootstrap-template
-              path: '$(System.DefaultWorkingDirectory)/bootstrap-template'
-          - task: AWSShellScript@1
-            displayName: CDK delete in RobRoosDev account
-            inputs:
-              awsCredentials: my-aws-account-cdk-2-accounts-cdk-s3-ts # ns-automation-shadow-LZCDKDeployUser
-              regionName: 'us-east-1'
-              scriptType: 'inline'
-              inlineScript: |
-                #npx cdk deploy --app 'cdk.out-shadow/' --require-approval never --all
-                cdk destroy --all
+  - deployment: DeleteStack
+    environment: RobRoosCdkLandingZoneStaging
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                artifact: cdk.out-shadow
+                path: '$(System.DefaultWorkingDirectory)/cdk.out-shadow'
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                artifact: bootstrap-template
+                path: '$(System.DefaultWorkingDirectory)/bootstrap-template'
+            - task: AWSShellScript@1
+              displayName: CDK delete in RobRoosDev account
+              inputs:
+                awsCredentials: my-aws-account-cdk-2-accounts-cdk-s3-ts # ns-automation-shadow-LZCDKDeployUser
+                regionName: 'us-east-1'
+                scriptType: 'inline'
+                inlineScript: |
+                  #npx cdk deploy --app 'cdk.out-shadow/' --require-approval never --all
+                  cdk destroy --all
 
 
 # - task: AWSShellScript@1
