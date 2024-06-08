@@ -22,7 +22,7 @@ stages:
         npm ci
         npm run build
         # for service managed deployments
-        #npx cdk bootstrap --show-template > bootstrap_template/bootstrap-template.yaml
+        npx cdk bootstrap --show-template > bootstrap_template/bootstrap-template.yaml
         npx cdk synth --output='cdk.out-shadow' -c environment=shadow
         npx cdk synth -c environment=production
       displayName: 'npm install and build'
