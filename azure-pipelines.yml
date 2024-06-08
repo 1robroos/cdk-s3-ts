@@ -1,7 +1,7 @@
 trigger: none
 
 variables:
-  system.debug: 'true'
+  system.debug: 'false'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -29,8 +29,22 @@ stages:
         # To get a copy of this template in the file bootstrap-template.yaml, run the following command:
         #npx cdk bootstrap --show-template > bootstrap_template/bootstrap-template.yaml # /home/vsts/work/_temp/6b9b7cab-aeaf-4abb-a3ec-ed5075dc9134.sh: line 7: bootstrap_template/bootstrap-template.yaml: No such file or directory
         npx cdk bootstrap --show-template > bootstrap-template.yaml
-        pwd 
+        pwd  # /home/vsts/work/1/s 
         ls -l 
+        # total 240
+        # -rw-r--r--   1 vsts docker   4283 Jun  8 14:53 Makefile
+        # -rw-r--r--   1 vsts docker    536 Jun  8 14:53 README.md
+        # -rw-r--r--   1 vsts docker   7603 Jun  8 14:53 azure-pipelines.yml
+        # drwxr-xr-x   2 vsts docker   4096 Jun  8 14:54 bin
+        # -rw-r--r--   1 vsts docker  20488 Jun  8 14:54 bootstrap-template.yaml
+        # -rw-r--r--   1 vsts docker   3404 Jun  8 14:53 cdk.json
+        # -rw-r--r--   1 vsts docker    157 Jun  8 14:53 jest.config.js
+        # drwxr-xr-x   2 vsts docker   4096 Jun  8 14:54 lib
+        # drwxr-xr-x 219 vsts docker  12288 Jun  8 14:54 node_modules
+        # -rw-r--r--   1 vsts docker 157587 Jun  8 14:53 package-lock.json
+        # -rw-r--r--   1 vsts docker    536 Jun  8 14:53 package.json
+        # drwxr-xr-x   2 vsts docker   4096 Jun  8 14:54 test
+        # -rw-r--r--   1 vsts docker    663 Jun  8 14:53 tsconfig.json
 
         # also available in https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml
         echo "Starting npx cdk synth shadow"
@@ -51,6 +65,14 @@ stages:
   displayName: Deploy to shadow environment
   dependsOn: Build
   jobs:
+  - task: AWSCLI@1
+    inputs:
+      awsCredentials: my-aws-account-cdk-2-accounts-cdk-s3-ts 
+      regionName: 'us-east-1'
+      awsCommand: 'sts'
+      awsSubCommand: 'get-caller-identity'
+    displayName: 'aws sts'
+  
   - deployment: Deploy
     environment: RobRoosCdkLandingZoneStaging
     strategy:
@@ -65,16 +87,16 @@ stages:
               inputs:
                 artifact: bootstrap-template
                 path: '$(System.DefaultWorkingDirectory)/bootstrap-template'
-            # - task: AWSShellScript@1
-            #   displayName: Bootstrap management account
-            #   inputs:
-            #     awsCredentials: ns-automation-shadow-LZCDKBootstrapUser
-            #     regionName: 'eu-west-1'
-            #     scriptType: 'inline'
-            #     inlineScript: |
-            #       npx cdk bootstrap --template bootstrap-template/bootstrap-template.yaml aws://038337687866/eu-west-1 --bootstrap-kms-key-id '' -t ApplicationServiceID=ASID0001709 -t map-migrated=d-server-00tl810rxa1dds
-            #       npx cdk bootstrap --template bootstrap-template/bootstrap-template.yaml aws://038337687866/eu-central-1 --bootstrap-kms-key-id '' -t ApplicationServiceID=ASID0001709 -t map-migrated=d-server-00tl810rxa1dds
-            #       npx cdk bootstrap --template bootstrap-template/bootstrap-template.yaml aws://038337687866/us-east-1 --bootstrap-kms-key-id '' -t ApplicationServiceID=ASID0001709 -t map-migrated=d-server-00tl810rxa1dds
+            - task: AWSShellScript@1
+              displayName: Bootstrap management account
+              inputs:
+                awsCredentials: my-aws-account-cdk-2-accounts-cdk-s3-ts # ns-automation-shadow-LZCDKBootstrapUser
+                regionName: 'us-east-1'
+                scriptType: 'inline'
+                inlineScript: |
+                  npx cdk bootstrap --template bootstrap-template/bootstrap-template.yaml aws://969526043371/eu-west-1 --bootstrap-kms-key-id '' -t ApplicationServiceID=ASID0001709 -t map-migrated=d-server-00tl810rxa1dds
+                  npx cdk bootstrap --template bootstrap-template/bootstrap-template.yaml aws://969526043371/eu-central-1 --bootstrap-kms-key-id '' -t ApplicationServiceID=ASID0001709 -t map-migrated=d-server-00tl810rxa1dds
+                  npx cdk bootstrap --template bootstrap-template/bootstrap-template.yaml aws://969526043371/us-east-1 --bootstrap-kms-key-id '' -t ApplicationServiceID=ASID0001709 -t map-migrated=d-server-00tl810rxa1dds
             - task: AWSShellScript@1
               displayName: CDK deploy in management account
               inputs:
@@ -84,19 +106,6 @@ stages:
                 inlineScript: |
                   npx cdk deploy --app 'cdk.out-shadow/' --require-approval never --all
 
-# - task: AWSCLI@1
-#   inputs:
-#     awsCredentials: my-aws-account-cdk-2-accounts # 'ADO-test-this-account' # 'my-aws-account-cdk-2-accounts' # shared from serv.conn: 'my-aws-account' # iam user azuredevops in master account
-#     regionName: 'us-east-1'
-#     awsCommand: 'sts'
-#     awsSubCommand: 'get-caller-identity'
-#   displayName: 'aws sts test3'
-# gives:
-#   {
-#     "UserId": "AIDA6DPCBMLV4PVAYJWRP",
-#     "Account": "969526043371",
-#     "Arn": "arn:aws:iam::969526043371:user/azuredevops"
-# }
 
 
 # - task: AWSShellScript@1
