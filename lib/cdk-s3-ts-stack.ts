@@ -16,7 +16,8 @@ export class CdkS3TsStack extends cdk.Stack {
    
     //Define an S3 bucket.
 
-    const bucket = new s3.Bucket(this, 'MyFirstBucket');
+    const bucket = new s3.Bucket(this, 'MyFirstBucket')
+    ;
 
   }
 }
