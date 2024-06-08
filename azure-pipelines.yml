@@ -132,7 +132,7 @@ stages:
                 scriptType: 'inline'
                 inlineScript: |
                   #npx cdk deploy --app 'cdk.out-shadow/' --require-approval never --all
-                  npx cdk destroy --all
+                  npx cdk destroy --app 'cdk.out-shadow/' --require-approval never --all
 
 
 # - task: AWSShellScript@1
