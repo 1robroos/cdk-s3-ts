@@ -24,9 +24,12 @@ stages:
         echo "Starting npm run build"
         npm run build       # npm run build creates a build directory with a production build of your app.
         # for service managed deployments
-        echo "Starting npx cdk bootstrap"
-        npx cdk bootstrap --show-template > bootstrap_template/bootstrap-template.yaml
-        echo "Starting npx cdk synth shoadow"
+        echo "Starting npx cdk bootstrap" 
+        # You can bootstrap an environment by obtaining and deploying the bootstrap AWS CloudFormation template.
+        # To get a copy of this template in the file bootstrap-template.yaml, run the following command:
+        #npx cdk bootstrap --show-template > bootstrap_template/bootstrap-template.yaml # /home/vsts/work/_temp/6b9b7cab-aeaf-4abb-a3ec-ed5075dc9134.sh: line 7: bootstrap_template/bootstrap-template.yaml: No such file or directory
+        npx cdk bootstrap --show-template > bootstrap-template.yaml
+        echo "Starting npx cdk synth shadow"
         npx cdk synth --output='cdk.out-shadow' -c environment=shadow
         echo "Starting npx cdk synth prod"
         npx cdk synth -c environment=production
@@ -35,9 +38,11 @@ stages:
       artifact: cdk.out-shadow
     - publish: $(System.DefaultWorkingDirectory)/cdk.out
       artifact: cdk.out
-    - publish: $(System.DefaultWorkingDirectory)/src/bootstrap-template
-      artifact: bootstrap-template
-
+    # - publish: $(System.DefaultWorkingDirectory)/src/bootstrap-template
+    #   artifact: bootstrap-template # ##[error]Path does not exist: /home/vsts/work/1/s/src/bootstrap-template
+    - publish: $(System.DefaultWorkingDirectory)/bootstrap-template
+      artifact: bootstrap-template # ##[error]Path does not exist: /home/vsts/work/1/s/src/bootstrap-template
+      
 - stage: Staging
   displayName: Deploy to shadow environment
   dependsOn: Build
