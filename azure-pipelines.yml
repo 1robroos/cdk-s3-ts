@@ -1,7 +1,7 @@
 trigger: none
 
 variables:
-  system.debug: 'false'
+  system.debug: 'true'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -25,10 +25,11 @@ stages:
         npm run build       # npm run build creates a build directory with a production build of your app.
         # for service managed deployments
         echo "Starting npx cdk bootstrap" 
-        # You can bootstrap an environment by obtaining and deploying the bootstrap AWS CloudFormation template.
+        # You can bootstrap an environment by obtaining and deploying the bootstrap AWS CloudFormation template. ( je kan ook gewoon cdk bootstrap doen )
         # To get a copy of this template in the file bootstrap-template.yaml, run the following command:
         #npx cdk bootstrap --show-template > bootstrap_template/bootstrap-template.yaml # /home/vsts/work/_temp/6b9b7cab-aeaf-4abb-a3ec-ed5075dc9134.sh: line 7: bootstrap_template/bootstrap-template.yaml: No such file or directory
         npx cdk bootstrap --show-template > bootstrap-template.yaml
+        # also available in https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml
         echo "Starting npx cdk synth shadow"
         npx cdk synth --output='cdk.out-shadow' -c environment=shadow
         echo "Starting npx cdk synth prod"
