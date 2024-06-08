@@ -106,7 +106,6 @@ stages:
   #               inlineScript: |
   #                 npx cdk deploy --app 'cdk.out-shadow/' --require-approval never --all
 
-aws sts'
   
 - deployment: DeleteStack
   environment: RobRoosCdkLandingZoneStaging
