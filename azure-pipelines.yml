@@ -62,19 +62,19 @@ pool:
             - task: AWSShellScript@1
               displayName: CDK deploy in management account
               inputs:
-                awsCredentials: ns-automation-shadow-LZCDKDeployUser
-                regionName: 'eu-west-1'
+                awsCredentials: my-aws-account-cdk-2-accounts # ns-automation-shadow-LZCDKDeployUser
+                regionName: 'us-east-1'
                 scriptType: 'inline'
                 inlineScript: |
                   npx cdk deploy --app 'cdk.out-shadow/' --require-approval never --all
 
-- task: AWSCLI@1
-  inputs:
-    awsCredentials: 'ADO-test-this-account' # 'my-aws-account-cdk-2-accounts' # shared from serv.conn: 'my-aws-account' # iam user azuredevops in master account
-    regionName: 'us-east-1'
-    awsCommand: 'sts'
-    awsSubCommand: 'get-caller-identity'
-  displayName: 'aws sts test3'
+# - task: AWSCLI@1
+#   inputs:
+#     awsCredentials: my-aws-account-cdk-2-accounts # 'ADO-test-this-account' # 'my-aws-account-cdk-2-accounts' # shared from serv.conn: 'my-aws-account' # iam user azuredevops in master account
+#     regionName: 'us-east-1'
+#     awsCommand: 'sts'
+#     awsSubCommand: 'get-caller-identity'
+#   displayName: 'aws sts test3'
 # gives:
 #   {
 #     "UserId": "AIDA6DPCBMLV4PVAYJWRP",
