@@ -64,7 +64,7 @@ stages:
             - task: AWSShellScript@1
               displayName: CDK deploy in management account
               inputs:
-                awsCredentials: my-aws-account-cdk-2-accounts # ns-automation-shadow-LZCDKDeployUser
+                awsCredentials: my-aws-account-cdk-2-accounts-cdk-s3-ts # ns-automation-shadow-LZCDKDeployUser
                 regionName: 'us-east-1'
                 scriptType: 'inline'
                 inlineScript: |
