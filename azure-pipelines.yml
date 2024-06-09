@@ -132,6 +132,7 @@ stages:
                 scriptType: 'inline'
                 inlineScript: |
                   #npx cdk deploy --app 'cdk.out-shadow/' --require-approval never --all
+                  echo "starting destroy-all"
                   npx cdk destroy --app 'cdk.out-shadow/' --require-approval never --all
 
 
