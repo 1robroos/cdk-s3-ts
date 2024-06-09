@@ -75,7 +75,13 @@ stages:
         awsCommand: 'sts'
         awsSubCommand: 'get-caller-identity'
       displayName: 'aws sts'
-  
+
+#   {
+#     "UserId": "AROA6RPCZEUB3HNWN45BH:***",
+#     "Account": "999592371459",
+#     "Arn": "arn:aws:sts::999592371459:assumed-role/allow_ADO_via_master_account/***"
+# }
+
   # - deployment: Deploy
   #   environment: RobRoosCdkLandingZoneStaging
   #   strategy:
@@ -135,7 +141,14 @@ stages:
                   echo "list stack"
                   npx cdk ls --app 'cdk.out-shadow/'
                   echo "starting destroy-all"
-                  npx cdk destroy --app 'cdk.out-shadow/' --require-approval never --all
+                  npx cdk destroy --app 'cdk.out-shadow/' --force
+                   # without --force: does nothing, pipeline debug keeps giving:
+                      ###[debug]Agent environment resources - Disk: / Available 21487.00 MB out of 74244.00 MB, Memory: Used 841.00 MB out of 6921.00 MB, CPU: Usage 16.39%
+# on prompt:
+  # npx cdk destroy --app 'cdk.out-shadow/' --require-approval never --all 
+  # Are you sure you want to delete: CdkS3TsStack (y/n)? 
+# https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-destroy.html
+
 
 
 # - task: AWSShellScript@1
