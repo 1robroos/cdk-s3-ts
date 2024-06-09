@@ -62,7 +62,7 @@ stages:
       artifact: bootstrap-template # ##[error]Path does not exist: /home/vsts/work/1/s/src/bootstrap-template
       
 - stage: Staging
-  displayName: Deploy to shadow environment
+  displayName: Deploy to my personal environment
   dependsOn: Build
   jobs:
   - job: sts
@@ -132,6 +132,8 @@ stages:
                 scriptType: 'inline'
                 inlineScript: |
                   #npx cdk deploy --app 'cdk.out-shadow/' --require-approval never --all
+                  echo "list stack"
+                  npx cdk ls --app 'cdk.out-shadow/'
                   echo "starting destroy-all"
                   npx cdk destroy --app 'cdk.out-shadow/' --require-approval never --all
 
